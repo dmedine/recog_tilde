@@ -1,4 +1,4 @@
-/*
+git add --a/*
 [recog~] is a speech recognizer external for Pure Data written with the pocketsphinx API:
 http://cmusphinx.sourceforge.net/
 here is the copyright info for this excellent software:
