@@ -1,0 +1,105 @@
+[recog~] is a speech recognition extern built around CMU's sphinx library (see license below). 
+
+This extern still needs a lot of work still:
+
+-variable models (just some functionality code)
+-better controls 
+-general code cleanup
+
+but it does work. 
+
+This project is an old one that I recently blew the dust off of. I quit working on it 3 years ago because it turned out that pocketsphinx has a function call collision with pd's gui engine on linux. This causes (on linux) pd to crash anytime you try to decode. Back then I couldn't figure out how to resolve this issue without rebbuilding either sphinx or pd to avoid the collision. Clearly this is not an elegant solution if I want people to use this software. Now, I know more about libraries and dynamic loading, so I rewrote the extern to use the dynamic libpocketsphinx rather than the static one. Thus, in essence, the heart of [recog~] (recog_tilde_decode) is simply a wrapper for libpocketsphinx.so. However, since this older code, the style is pretty bad. A word of warning to anyone that wants to pick this up. I will continue to rewrite and improve the functionality as time allows.
+
+
+Other things to think about are designing a pd patch to automate start/decode calls and building a sister extern that can train a custom model (HARD!).
+
+sphinx
+------
+First of all, in order for this to work you need to get and install sphinxbase and pocketsphinx:
+http://cmusphinx.sourceforge.net/wiki/tutorialpocketsphinx
+
+On my computer, after building and installing the libraries, I had to move the sphinxbase.pc and pocketsphinx.pc files so that pkg-config could find them:
+
+<path to sphinxbase> > sudo cp sphinxbase.pc /usr/share/pkgconfig/
+
+and the same with pocketsphinx. 
+
+If you are unfamiliar, you might want to read the 'learn' pages from the above url anyway to get acquainted.
+
+Thanks Carnegie Melon University for this incredible software!
+
+
+building:
+---------
+Linux:
+Drop the recog_tilde folder into Pd's extra folder and hit 
+
+> make
+
+in a terminal. You can also specify the include path (needed to find m_pd.h) by typing:
+
+> make PDPATH=<full path to pd's src folder>
+
+where the full path is something like /home/dmedine/Software/pd-0.45-4/src 
+
+Mac:
+You will need to change the fourth line of the makefile from:
+
+current: pd_linux
+
+to:
+
+current: pd_darwin
+
+then, it's the same as for linux. The makefile uses the same variable PDPATH for both linux and mac build options, so the same deal applies.
+
+installing:
+-----------
+You will also need to tell Pd where the extern is. If it is in the extra folder, you should be fine just renaming the folder 'recog_tilde' to 'recog~' otherwise you will need to add the path to Pd's path list, or declare the path using the [declare] object with the -path flag and the path to recog~.pd_linux.
+
+/*
+[recog~] is a speech recognizer external for Pure Data written with the pocketsphinx API:
+http://cmusphinx.sourceforge.net/
+here is the copyright info for this excellent software:
+
+ * ====================================================================
+ * Copyright (c) 1999-2010 Carnegie Mellon University.  All rights
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * This work was supported in part by funding from the Defense Advanced 
+ * Research Projects Agency and the National Science Foundation of the 
+ * United States of America, and the CMU Sphinx Speech Consortium.
+ *
+ * THIS SOFTWARE IS PROVIDED BY CARNEGIE MELLON UNIVERSITY ``AS IS'' AND 
+ * ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL CARNEGIE MELLON UNIVERSITY
+ * NOR ITS EMPLOYEES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * ====================================================================
+
+ my own copyright:
+
+This code is entirely free to use for any reasonable purpose.
+Copyright(c) David Medine March 2, 2014
+http://imusic1.ucsd.edu/~dmedine
+dmedine@ucsd.edu
+****/
