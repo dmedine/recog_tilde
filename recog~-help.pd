@@ -1,6 +1,6 @@
-#N canvas 702 151 657 513 10;
-#X obj 71 218 recog~;
-#N canvas 1 244 697 514 arrays 1;
+#N canvas 700 149 657 513 10;
+#X obj 126 196 recog~;
+#N canvas 1 242 697 514 arrays 1;
 #N canvas 0 50 450 300 (subpatch) 0;
 #X array sound 133740 float 2;
 #X coords 0 1 133740 -1 200 140 1;

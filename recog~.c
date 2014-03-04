@@ -67,11 +67,17 @@ typedef ps_decoder_t *(*fn_ps_init)(cmd_ln_t *config);
 
 typedef int (*fn_ps_start_utt)(ps_decoder_t *ps, char const *uttid);
 
-typedef int (*fn_ps_process_raw)(ps_decoder_t *ps, int16 const *data, size_t n_samples, int no_search, int full_utt);
+typedef int (*fn_ps_process_raw)(ps_decoder_t *ps, 
+				 int16 const *data, 
+				 size_t n_samples, 
+				 int no_search, 
+				 int full_utt);
 
 typedef int (*fn_ps_end_utt)(ps_decoder_t *ps);
 
-typedef char const *(*fn_ps_get_hyp)(ps_decoder_t *ps, int32 *out_best_score, char const **out_uttid);
+typedef char const *(*fn_ps_get_hyp)(ps_decoder_t *ps, 
+				     int32 *out_best_score, 
+				     char const **out_uttid);
 
 typedef int(*fn_ps_free)(ps_decoder_t *ps);
 
@@ -87,8 +93,6 @@ typedef struct _dl_sphinx{
   fn_ps_end_utt     r_ps_end_utt;
   fn_ps_get_hyp     r_ps_get_hyp;
   fn_ps_free        r_ps_free;
-
-
 
   int32 score;
 
@@ -129,6 +133,7 @@ typedef struct _recog_tilde{
   t_int sampleRate;
 
   t_histogram *x_histo;
+
   //a histogram is associated with the charBuff 
   //used to compare strings and (hopefully) report correct
   //hyps
@@ -144,12 +149,10 @@ typedef struct _recog_tilde{
   int writeout, writeread;
 }t_recog_tilde;
 
-  //structs from sphinx don't put these in the object struct??
-
 t_symbol *hmm;
 t_symbol *lm;
 t_symbol *dict;
-  
+t_symbol *lib_dir;  
 
 
 //----------------------------------
@@ -161,9 +164,12 @@ static void output(t_recog_tilde *x);
 
 //----------------------------------
 //----------------------------------
+
 static float spline_interpolate(t_float *buffer, t_int bufferLength, t_float findex)
 //this routine is from musicDSP.org
-//I literally copied someone else's code (works great)
+//I literally copied someone else's code 
+//this may be overkill in terms of downsampling, but
+//it is accurate
 {
 
 
@@ -183,7 +189,6 @@ static float spline_interpolate(t_float *buffer, t_int bufferLength, t_float fin
 					      + fr *( p2*126.0-p3*124.0+p4*61.0-p1*64.0- p5*12.0+p0*13.0
 						      + fr *((p3-p2)*50.0+(p1-p4)*25.0+(p5-p0)*5.0)))));
 }
-
 
 static void block(t_recog_tilde *x, int n)
 {
@@ -261,9 +266,9 @@ static void down_sample(t_recog_tilde *x, t_int n)
   t_float conv, oneOverConv, f;
   t_int newsampnum;
 
+  x->sampleRate = sys_getsr();
   conv = (t_float)x->sampleRate/16000.0;
   f = (n/conv);
-
 
   newsampnum = (t_int)f;
 
@@ -370,7 +375,7 @@ static void recog_tilde_init(t_recog_tilde *x)
  //x->y.r_cl_retain(x->ps);
  if (x->ps == NULL)
     pd_error(x, "configuration error!");
-  else post("%d", sizeof(x->ps));
+  else post("pocketsphinx configured correctly");
 
 }
 
@@ -385,28 +390,6 @@ static void recog_tilde_decode(t_recog_tilde *x)
   char buf[256];
   int hyplen;
 
-  /* if (fp_ps == NULL) { */
-  /*   perror("Failed to open goforward.raw"); */
-  /*   return 1; */
-  /* } */
-
-  /* fseek(fp_ps, 0, SEEK_SET); */
-  /* rv = ps_start_utt(ps, "goforward"); */
-  /* if (rv < 0) */
-  /*   return 1; */
-  /* while (!feof(fp_ps)) { */
-  /*   size_t nsamp; */
-  /*   nsamp = fread(buf, 2, 512, fp_ps); */
-  /*   rv = ps_process_raw(ps, buf, nsamp, FALSE, FALSE); */
-  /* } */
-  /* rv = ps_end_utt(ps); */
-  /* if (rv < 0) */
-  /*   return 1; */
-  /* hyp = ps_get_hyp(ps, &score, &uttid); */
-  /* if (hyp == NULL) */
-  /*   return 1; */
-  /* printf("Recognized: %s\n", hyp); */
-
   rv =  x->y.r_ps_start_utt(x->ps, NULL);
   //post("this should be 0: %d", rv);
 
@@ -414,7 +397,7 @@ static void recog_tilde_decode(t_recog_tilde *x)
     rv = x->y.r_ps_process_raw(x->ps, x->decodeAutoBuff, x->autoBuffSize, FALSE, FALSE);
   else
     rv = x->y.r_ps_process_raw(x->ps, x->decodeBuff, x->decodeWritePoint, FALSE, FALSE);
-  post("this should be the number of frames: %d", rv);
+  //post("this should be the number of frames: %d", rv);
   
   rv = x->y.r_ps_end_utt(x->ps);
   //post("this should also be 0: %d", rv);
@@ -467,10 +450,6 @@ static void output(t_recog_tilde *x)
   freebytes(outv, outc * sizeof(t_atom));
 }
 
-
-//begin the decoding cycle--this methodology
-//will change once the current system is functioning
-//perhaps there will be an 'auto' mode...
 void recog_tilde_output(t_recog_tilde *x)
 {
   x->writeout = 1;
@@ -494,17 +473,14 @@ void recog_tilde_start(t_recog_tilde *x)
 void recog_tilde_stop(t_recog_tilde *x)
 {
 
-
-
   if(x->decodeGo == 1)
     {
+
       x->decodeGo = 0;
       x->automode = 0;
       recog_tilde_decode(x);
 
-
     }
-
 
 }
 
@@ -587,7 +563,6 @@ t_int *recog_tilde_perform(t_int *w)
 
   int i;
 
-
   for(i=0; i<n; i++)
     {  
       x->inBuff[x->ioWritePoint++] = in[i];
@@ -622,11 +597,14 @@ t_int *recog_tilde_perform(t_int *w)
 
 static void recog_tilde_dsp(t_recog_tilde *x, t_signal **sp)
 {
+
   dsp_add(recog_tilde_perform, 4, x, sp[0]->s_vec, sp[1]->s_vec, sp[0]->s_n);
+
 }
 
 static void *recog_tilde_new(int argc, t_atom *argv)
 {
+
   t_recog_tilde *x = (t_recog_tilde *)pd_new(recog_tilde_class);
 
   outlet_new(&x->x_obj, &s_signal);
@@ -666,8 +644,8 @@ static void *recog_tilde_new(int argc, t_atom *argv)
   //sphinx setup stuff:
   //recodsider this whole thing:
   hmm=gensym("./model/hmm/en_US/hub4wsj_sc_8k");
-  dict=gensym("./model/lm/en/turtle.dic");
-  lm=gensym("./model/lm/en/turtle.DMP");
+  dict=gensym("./model/lm/en_US/hub4.5000.dic");
+  lm=gensym("./model/lm/en_US/hub4.5000.DMP");
 
   //
   x->inBuff = (t_float *)t_getbytes(0);
@@ -706,7 +684,6 @@ static void *recog_tilde_new(int argc, t_atom *argv)
   x->x_histo = (t_histogram *)t_getbytes(0);
   x->x_histo = (t_histogram *)t_resizebytes(x->x_histo, 0, sizeof(t_int) * 50);
 
-  post("size of char ptr : %d", sizeof(char *));
   recog_tilde_init(x); 
 
   return (void*)x;

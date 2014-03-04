@@ -1,13 +1,19 @@
-[recog~] is a speech recognition extern built around CMU's sphinx library (see license below). This extern needs a lot of work still:
+[recog~] is a speech recognition extern built around CMU's sphinx library (see license below). 
 
--variable models
--better controls
+This extern still needs a lot of work still:
+
+-output for text
+-debug the 'auto' mode
+-variable models (just some functionality code)
+-better controls 
 -general code cleanup
 
-but it does work. This project is an old one recently refurbished. I quit 3 years ago because turned out that pocketsphinx has a function call collision with pd's gui engine on linux. This causes (on linux) pd to crash anytime you try to decode. The solution was to load the library as a dynamic rather than static library (hence the indirect function calls). So in essence, the heart of [recog~] (recog_tilde_decode) is simply a wrapper for libpocketsphinx.so. However, since this older code, the style is pretty bad. A word of warning to anyone that wants to pick this up.
+but it does work. 
+
+This project is an old one that I recently blew the dust off of. I quit working on it 3 years ago because it turned out that pocketsphinx has a function call collision with pd's gui engine on linux. This causes (on linux) pd to crash anytime you try to decode. Back then I couldn't figure out how to resolve this issue without rebuilding either sphinx or pd with altered function names to avoid the collision. Clearly this is not an elegant solution. Now, I know more about libraries and dynamic loading, so I rewrote the extern to use the dynamic libpocketsphinx rather than the static one. Thus, in essence, the heart of [recog~] (recog_tilde_decode) is simply a wrapper for libpocketsphinx.so. This is older code so the style is kinda bad. I will continue to rewrite and improve the functionality as time allows.
 
 
-Other things to think about are designing a pd patch to automate start/decode calls and building a sister extern that can train a custom model (HARD!).
+Other things to think about are designing a pd patch to automate start/decode calls and building a sister extern that can be used to train a custom model.
 
 sphinx
 ------
@@ -20,9 +26,9 @@ On my computer, after building and installing the libraries, I had to move the s
 
 and the same with pocketsphinx. 
 
-You might want to read the 'learn' pages from the above url anyway to get acquainted with sphinx and speech recognition if you haven't already.
+If you are unfamiliar, you might want to read the 'learn' pages from the above url anyway to get acquainted.
 
-Thanks Carnegie Melon University for this incredible software!
+Thanks Carnegie Melon University for this wonderful software!
 
 
 building:
