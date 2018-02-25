@@ -6,13 +6,10 @@ class.sources = recog~.c
 
 datafiles = recog~-help.pd
 
-# build for 64 bit only
-arch := x86_64
-arch := i386
+# build for 64 bit only ??
 
 # You have to define MODELDIR in Makefile. Something like 
 cflags += -DMODELDIR "/usr/local/share/pocketsphinx/model" -I/usr/local/Cellar/cmu-sphinxbase/HEAD-a74a11d/include/sphinxbase -I/usr/local/Cellar/cmu-pocketsphinx/HEAD-c178c8d/include/pocketsphinx
-# cc += -arch x86_64
 
 # link to libgphoto2
 ldlibs = -lpocketsphinx -lsphinxbase
