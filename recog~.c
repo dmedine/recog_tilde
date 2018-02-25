@@ -627,7 +627,7 @@ static void *recog_tilde_new(int argc, t_atom *argv)
 
   x->wordCount = x->prevWordCount = x->writeout = x->writeread = 0;
   
-  x->y.handle = dlopen("/usr/local/lib/libpocketsphinx.so",  RTLD_LAZY | RTLD_GLOBAL);
+  x->y.handle = dlopen("/usr/local/lib/libpocketsphinx.dylib",  RTLD_LAZY | RTLD_GLOBAL);
 
   if(!x->y.handle)
     printf("shared object load ERROR:\n\t%s\n",dlerror());
