@@ -9,9 +9,9 @@ datafiles = recog~-help.pd
 # build for 64 bit only ??
 
 # You have to define MODELDIR in Makefile. Something like 
-cflags += -DMODELDIR "/usr/local/share/pocketsphinx/model" -I/usr/local/Cellar/cmu-sphinxbase/HEAD-a74a11d/include/sphinxbase -I/usr/local/Cellar/cmu-pocketsphinx/HEAD-c178c8d/include/pocketsphinx
+cflags += -DMODELDIR "/usr/local/share/pocketsphinx/model" -I/usr/local/include/pocketsphinx -I/usr/local/include/sphinxbase
 
-# link to libgphoto2
+# link to dylib's
 ldlibs = -lpocketsphinx -lsphinxbase
 
 PDLIBBUILDER_DIR=pd-lib-builder/
