@@ -55,6 +55,17 @@ current: pd_darwin
 
 then, it's the same as for linux. The makefile uses the same variable PDPATH for both linux and mac build options, so the same deal applies.
 
+
+
+building w/ pd-lib-builder:
+---------
+
+on osx:
+$ make -f Makefile.pdlibbuilder LDFLAGS="-arch x86_64"
+$ ./osx_dependencies.sh
+
+
+
 installing:
 -----------
 You will also need to tell Pd where the extern is. If it is in the extra folder, you should be fine just renaming the folder 'recog_tilde' to 'recog~' otherwise you will need to add the path to Pd's path list, or declare the path using the [declare] object with the -path flag and the path to recog~.pd_linux.

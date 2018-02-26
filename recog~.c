@@ -627,7 +627,7 @@ static void *recog_tilde_new(int argc, t_atom *argv)
 
   x->wordCount = x->prevWordCount = x->writeout = x->writeread = 0;
   
-  x->y.handle = dlopen("/usr/local/lib/libpocketsphinx.so",  RTLD_LAZY | RTLD_GLOBAL);
+  x->y.handle = dlopen("/usr/local/lib/libpocketsphinx.dylib",  RTLD_LAZY | RTLD_GLOBAL);
 
   if(!x->y.handle)
     printf("shared object load ERROR:\n\t%s\n",dlerror());
@@ -643,9 +643,13 @@ static void *recog_tilde_new(int argc, t_atom *argv)
 
   //sphinx setup stuff:
   //recodsider this whole thing:
-  hmm=gensym("./model/hmm/en_US/hub4wsj_sc_8k");
-  dict=gensym("./model/lm/en_US/hub4.5000.dic");
-  lm=gensym("./model/lm/en_US/hub4.5000.DMP");
+  //hmm=gensym("./model/hmm/en_US/hub4wsj_sc_8k");
+  //dict=gensym("./model/lm/en_US/hub4.5000.dic");
+  //lm=gensym("./model/lm/en_US/hub4.5000.DMP");
+
+  hmm=gensym("./model/en-us/en-us");
+  dict=gensym("./model/en-us/cmudict-en-us.dict");
+  lm=gensym("./model/en-us/en-us.lm.bin");
 
   //
   x->inBuff = (t_float *)t_getbytes(0);

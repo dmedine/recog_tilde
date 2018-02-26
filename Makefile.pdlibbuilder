@@ -1,0 +1,18 @@
+# Makefile for mylib
+
+lib.name = recog~
+
+class.sources = recog~.c
+
+datafiles = recog~-help.pd
+
+# build for 64 bit only ??
+
+# You have to define MODELDIR in Makefile. Something like 
+cflags += -DMODELDIR "/usr/local/share/pocketsphinx/model" -I/usr/local/include/pocketsphinx -I/usr/local/include/sphinxbase
+
+# link to dylib's
+ldlibs = -lpocketsphinx -lsphinxbase
+
+PDLIBBUILDER_DIR=pd-lib-builder/
+include $(PDLIBBUILDER_DIR)/Makefile.pdlibbuilder

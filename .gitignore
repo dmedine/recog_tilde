@@ -1,0 +1,4 @@
+*.pd_darwin
+*.o
+*.pd_linux
+*.dylib
