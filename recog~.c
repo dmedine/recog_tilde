@@ -643,9 +643,13 @@ static void *recog_tilde_new(int argc, t_atom *argv)
 
   //sphinx setup stuff:
   //recodsider this whole thing:
-  hmm=gensym("./model/hmm/en_US/hub4wsj_sc_8k");
-  dict=gensym("./model/lm/en_US/hub4.5000.dic");
-  lm=gensym("./model/lm/en_US/hub4.5000.DMP");
+  //hmm=gensym("./model/hmm/en_US/hub4wsj_sc_8k");
+  //dict=gensym("./model/lm/en_US/hub4.5000.dic");
+  //lm=gensym("./model/lm/en_US/hub4.5000.DMP");
+
+  hmm=gensym("./model/en-us/en-us");
+  dict=gensym("./model/en-us/cmudict-en-us.dict");
+  lm=gensym("./model/en-us/en-us.lm.bin");
 
   //
   x->inBuff = (t_float *)t_getbytes(0);
